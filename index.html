@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
 <title>Sealai LLC — Product Strategy & Social Impact</title>
 <meta name="description" content="Sealai LLC partners with mission-driven organizations to build, launch, and scale products that create lasting social impact.">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -792,12 +795,37 @@
   function handleSubmit(e) {
     e.preventDefault();
     const form = e.target;
-    const name = form.name.value;
-    const email = form.email.value;
-    const subject = form.subject.value;
-    const message = form.message.value;
-    const mailto = `mailto:yuann@sealai.org?subject=${encodeURIComponent(subject || 'Website Inquiry from ' + name)}&body=${encodeURIComponent('From: ' + name + ' (' + email + ')\n\n' + message)}`;
-    window.location.href = mailto;
+    const btn = form.querySelector('button');
+    const originalText = btn.textContent;
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    const data = new URLSearchParams({
+      name: form.name.value,
+      email: form.email.value,
+      subject: form.subject.value,
+      message: form.message.value
+    });
+
+    fetch('https://script.google.com/macros/s/AKfycbwGnCW14R3-VouIKpCQtxDEbP6_WulJUZixDhBuBJpqkKvToK6omfKiyAsxyJGpISBBsQ/exec', {
+      method: 'POST',
+      body: data
+    })
+    .then(() => {
+      btn.textContent = 'Sent!';
+      btn.style.background = '#2a8a9e';
+      form.reset();
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 3000);
+    })
+    .catch(() => {
+      btn.textContent = 'Error — try again';
+      btn.disabled = false;
+      setTimeout(() => { btn.textContent = originalText; }, 3000);
+    });
   }
 </script>
 
